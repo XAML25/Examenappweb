@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es-EC">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Catálogo Agropecuario - UTEQ</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="contenedor">
+    <main>
+        <section class="seccion-formulario">
+            <form id="formulario-producto" method="post">
+                <fieldset>
+                    <legend>Formulario de Inscripción UTEQ</legend>
+                    <div class="campo">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Manzana" minlength="3" maxlength="50" required>
+                    </div>
+                    <div class="campo">
+                        <label for="categoria">Categoría</label>
+                        <select id="categoria" name="categoria" required>
+                            <option value="" disabled selected>Seleccione una categoría</option>
+                            <option value="Frutas">Frutas</option>
+                            <option value="Hortalizas">Hortalizas</option>
+                            <option value="Granos">Granos</option>
+                            <option value="Lácteos">Lácteos</option>
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label for="precio">Precio</label>
+                        <input type="number" id="precio" name="precio" min="1" step="1" placeholder="0.00" required>
+                    </div>
+                    <div class="campo">
+                        <label for="descripcion">Descripción</label>
+                        <textarea id="descripcion" name="descripcion" placeholder="Breve descripción" required></textarea>
+                    </div>
+                    <button type="submit">Enviar Registro</button>
+                </fieldset>
+            </form>
+        </section>
+        <hr>
+        <section class="seccion-galeria">
+            <h2>Catálogo de Productos</h2>
+            <div class="contenedor-busqueda">
+                <label for="buscador">Buscar producto: </label>
+                <input type="text" id="buscador" placeholder=" ">
+            </div>
+            <div id="galeria-contenedor" class="galeria-grid">
+            </div>
+        </section>
+    </main>
+</div>
+<script>
+    const formulario = document.getElementById('formulario-producto');
+    const galeria = document.getElementById('galeria-contenedor');
+    const buscador = document.getElementById('buscador');
+    formulario.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const nombre = document.getElementById('nombre').value;
+        const categoria = document.getElementById('categoria').value;
+        const precio = parseFloat(document.getElementById('precio').value).toFixed(2);
+        const descripcion = document.getElementById('descripcion').value;
+        const tarjeta = document.createElement('div');
+        tarjeta.classList.add('tarjeta-producto');
+        tarjeta.innerHTML = `
+                <div class="tarjeta-badge">${categoria}</div>
+                <div class="tarjeta-cuerpo">
+                    <h3 class="producto-nombre">${nombre}</h3>
+                    <p class="tarjeta-precio">$${precio}</p>
+                    <p class="tarjeta-descripcion">${descripcion}</p>
+                    <button type="button" class="btn-eliminar">Eliminar</button>
+                </div>
+            `;
+        const botonEliminar = tarjeta.querySelector('.btn-eliminar');
+        botonEliminar.addEventListener('click', function() {
+            tarjeta.remove();
+        });
+        galeria.prepend(tarjeta);
+        formulario.reset();
+        buscador.value = '';
+        filtrarProductos('');
+    });
+    buscador.addEventListener('input', function(event) {
+        const textoBusqueda = event.target.value;
+        filtrarProductos(textoBusqueda);
+    });
+    function filtrarProductos(texto) {
+        const termino = texto.toLowerCase().trim();
+        const tarjetas = galeria.querySelectorAll('.tarjeta-producto');
+
+        tarjetas.forEach(tarjeta => {
+            const nombreProducto = tarjeta.querySelector('.producto-nombre').textContent.toLowerCase();
+            if (nombreProducto.includes(termino)) {
+                tarjeta.style.display = "";
+            } else {
+                tarjeta.style.display = "none";
+            }
+        });
+    }
+</script>
+</body>
+</html>
